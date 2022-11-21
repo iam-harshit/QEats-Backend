@@ -8,7 +8,6 @@
 package com.crio.qeats.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,12 +36,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-// TODO: CRIO_TASK_MODULE_RESTAURANTSAPI
-//  Pass all the RestaurantService test cases.
-// Contains necessary test cases that check for implementation correctness.
-// Objectives:
-// 1. Make modifications to the tests if necessary so that all test cases pass
-// 2. Test RestaurantService Api by mocking RestaurantRepositoryService.
 
 @SpringBootTest(classes = {QEatsApplication.class})
 @MockitoSettings(strictness = Strictness.STRICT_STUBS)
@@ -73,8 +66,6 @@ class RestaurantServiceTest {
     GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
         .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.0),
             timeOfService); //LocalTime.of(19,00));
-    
-    // allRestaurantsCloseBy.
     assertEquals(2, allRestaurantsCloseBy.getRestaurants().size());
     assertEquals("11", allRestaurantsCloseBy.getRestaurants().get(0).getRestaurantId());
     assertEquals("12", allRestaurantsCloseBy.getRestaurants().get(1).getRestaurantId());
@@ -96,15 +87,8 @@ class RestaurantServiceTest {
   @Test
   void normalHourServingRadiusIs5Kms() throws IOException {
 
-    // TODO: CRIO_TASK_MODULE_RESTAURANTSAPI
-    // We must ensure the API retrieves only restaurants that are closeby and are open
-    // In short, we need to test:
-    // 1. If the mocked service methods are being called
-    // 2. If the expected restaurants are being returned
-    // HINT: Use the `loadRestaurantsDuringNormalHours` utility method to speed things up
 
 
-     assertFalse(false);
   }
 
 

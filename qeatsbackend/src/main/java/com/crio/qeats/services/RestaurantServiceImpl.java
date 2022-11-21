@@ -23,24 +23,21 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// @Log4j2
 @Service
+@Log4j2
 public class RestaurantServiceImpl implements RestaurantService {
 
   private final Double peakHoursServingRadiusInKms = 3.0;
   private final Double normalHoursServingRadiusInKms = 5.0;
-  
   @Autowired
   private RestaurantRepositoryService restaurantRepositoryService;
 
-  
-  // TODO: CRIO_TASK_MODULE_RESTAURANTSAPI - Implement findAllRestaurantsCloseby.
-  // Check RestaurantService.java file for the interface contract.
+
   @Override
   public GetRestaurantsResponse findAllRestaurantsCloseBy(
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
-    
-    List <Restaurant> internalres;
+      
+        List <Restaurant> internalres;
     
         
     if( 
@@ -56,12 +53,15 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 
     }else{
-
+      
       internalres=restaurantRepositoryService.findAllRestaurantsCloseBy(getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude(), currentTime,normalHoursServingRadiusInKms);
     }
 
       return new GetRestaurantsResponse(internalres);
 
   }
-  
-}
+
+
+  }
+
+
