@@ -40,8 +40,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
 
-
-
+  @Autowired
+  private RestaurantRepository restaurantRepository;
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -61,24 +61,26 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   // 1. Implement findAllRestaurantsCloseby.
   // 2. Remember to keep the precision of GeoHash in mind while using it as a key.
   // Check RestaurantRepositoryService.java file for the interface contract.
-  public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
+   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
 
-    List<Restaurant> restaurants = null;
-
-
-      //CHECKSTYLE:OFF
-      //CHECKSTYLE:ON
-
-
-    return restaurants;
+        ModelMapper modelMapper = modelMapperProvider.get();
+        List<RestaurantEntity> restaurantEntityList = restaurantRepository.findAll();
+    
+        List<Restaurant> restaurantList = new ArrayList<>();
+        for (RestaurantEntity restaurantEntity : restaurantEntityList) {
+    
+          if (isOpenNow(currentTime, restaurantEntity)) {
+            if (GeoUtils.findDistanceInKm(latitude, longitude,
+                    restaurantEntity.getLatitude(), restaurantEntity.getLongitude())
+                    < servingRadiusInKms) {
+              restaurantList.add(modelMapper.map(restaurantEntity, Restaurant.class));
+            }
+          }
+        }
+    
+        return restaurantList;
   }
-
-
-
-
-
-
 
 
   // TODO: CRIO_TASK_MODULE_NOSQL
