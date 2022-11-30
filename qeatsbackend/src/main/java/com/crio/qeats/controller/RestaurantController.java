@@ -6,20 +6,23 @@
 
 package com.crio.qeats.controller;
 
+import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.services.RestaurantService;
 import com.crio.qeats.utils.GeoLocation;
 import java.time.LocalTime;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // @Slf4j
 @RestController
-// @RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
+@RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
 public class RestaurantController {
 
   public static final String RESTAURANT_API_ENDPOINT = "/qeats/v1";
@@ -53,6 +56,15 @@ public class RestaurantController {
     //CHECKSTYLE:OFF
     getRestaurantsResponse = restaurantService
     .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+
+    if(getRestaurantsResponse!=null && !getRestaurantsResponse.getRestaurants().isEmpty()){
+      List<Restaurant> restResponse=getRestaurantsResponse.getRestaurants();
+      for(Restaurant restIter: restResponse){
+        restIter.setName(restIter.getName().replace("é", "/"));
+      }
+      getRestaurantsResponse.setRestaurants(restResponse);
+    }
+
     // log.info("getRestaurants returned {}", getRestaurantsResponse);
     System.out.println("Restaurants called with:::::::......."+getRestaurantsResponse);
 
