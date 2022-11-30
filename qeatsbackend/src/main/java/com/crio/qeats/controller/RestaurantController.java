@@ -9,25 +9,17 @@ package com.crio.qeats.controller;
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.services.RestaurantService;
+import com.crio.qeats.utils.GeoLocation;
 import java.time.LocalTime;
 import javax.validation.Valid;
-import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 // @Slf4j
 @RestController
-@RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
+// @RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
 public class RestaurantController {
 
   public static final String RESTAURANT_API_ENDPOINT = "/qeats/v1";
@@ -44,30 +36,29 @@ public class RestaurantController {
 
 
 
-  @GetMapping(RESTAURANTS_API)
+  @GetMapping(RESTAURANT_API_ENDPOINT+RESTAURANTS_API)
   public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid GetRestaurantsRequest getRestaurantsRequest) {
 
     // log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
 
-      getRestaurantsResponse = restaurantService
-          .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-      // log.info("getRestaurants returned {}", getRestaurantsResponse);
+    GeoLocation geoloc=new GeoLocation(getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude());
+
+    if(getRestaurantsRequest.getLongitude()==null||getRestaurantsRequest.getLatitude()==null||!geoloc.isValidGeoLocation()){
+
+      return ResponseEntity.badRequest().body(null);
+
+    }
+    
+    //CHECKSTYLE:OFF
+    getRestaurantsResponse = restaurantService
+    .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+    // log.info("getRestaurants returned {}", getRestaurantsResponse);
+    System.out.println("Restaurants called with:::::::......."+getRestaurantsResponse);
+
 
     return ResponseEntity.ok().body(getRestaurantsResponse);
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

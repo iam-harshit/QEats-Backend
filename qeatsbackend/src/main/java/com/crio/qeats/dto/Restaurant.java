@@ -7,8 +7,8 @@
 
 package com.crio.qeats.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -16,24 +16,34 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @JsonIgnoreProperties(ignoreUnknown = true)
-// @AllArgsConstructor
-// @NoArgsConstructor
-// @Data
+@AllArgsConstructor
+@Data
+@NoArgsConstructor
+@Document
 public class Restaurant {
 
     // @JsonIgnore
     // private String id;
-    private String restaurantId;
-    private String name;
-    private String city;
-    private String imageUrl;
-    private Double latitude;
-    private Double longitude;
-    private String opensAt;
-    private String closesAt;
-    private List<String> attributes;
+    // private String restaurantId;
+    // private String name;
+    // private String city;
+    // private String imageUrl;
+    // private Double latitude;
+    // private Double longitude;
+    // private String opensAt;
+    // private String closesAt;
+    // private List<String> attributes;
+    @NotNull private String restaurantId;
+    @NotNull private String name;
+    @NotNull private String city;
+    @NotNull private String imageUrl;
+    @NotNull private Double latitude;
+    @NotNull private Double longitude;
+    @NotNull private String opensAt;
+    @NotNull private String closesAt;
+    @NotNull private List<String> attributes = new ArrayList<>();
+
 
     
 
@@ -93,6 +103,4 @@ public class Restaurant {
     } 
 
 }
-
-
 

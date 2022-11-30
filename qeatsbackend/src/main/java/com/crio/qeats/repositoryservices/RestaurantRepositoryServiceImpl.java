@@ -10,6 +10,7 @@ import ch.hsr.geohash.GeoHash;
 import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.globals.GlobalConstants;
 import com.crio.qeats.models.RestaurantEntity;
+import com.crio.qeats.repositories.ItemRepository;
 import com.crio.qeats.repositories.RestaurantRepository;
 import com.crio.qeats.utils.GeoLocation;
 import com.crio.qeats.utils.GeoUtils;
@@ -41,6 +42,9 @@ import org.springframework.stereotype.Service;
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
 
   @Autowired
+  ItemRepository itemRepo;
+
+  @Autowired
   private RestaurantRepository restaurantRepository;
 
   @Autowired
@@ -66,16 +70,18 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
         ModelMapper modelMapper = modelMapperProvider.get();
         List<RestaurantEntity> restaurantEntityList = restaurantRepository.findAll();
-    
         List<Restaurant> restaurantList = new ArrayList<>();
+
         for (RestaurantEntity restaurantEntity : restaurantEntityList) {
     
           if (isOpenNow(currentTime, restaurantEntity)) {
-            if (GeoUtils.findDistanceInKm(latitude, longitude,
-                    restaurantEntity.getLatitude(), restaurantEntity.getLongitude())
-                    < servingRadiusInKms) {
-              restaurantList.add(modelMapper.map(restaurantEntity, Restaurant.class));
-            }
+            if(isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms)){
+    
+                restaurantList.add(modelMapper.map(restaurantEntity,Restaurant.class));
+    
+    
+              }
+
           }
         }
     
