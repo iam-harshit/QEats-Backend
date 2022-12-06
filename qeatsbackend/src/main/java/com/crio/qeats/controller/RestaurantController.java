@@ -42,35 +42,61 @@ public class RestaurantController {
   @GetMapping(RESTAURANTS_API)
   public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid GetRestaurantsRequest getRestaurantsRequest) {
 
-    // log.info("getRestaurants called with {}", getRestaurantsRequest);
+
     GetRestaurantsResponse getRestaurantsResponse;
+    String searchFor = getRestaurantsRequest.getSearchFor();
+        
+            boolean isSearch = searchFor != null && !searchFor.isEmpty();
+            if (isSearch) {
+         getRestaurantsResponse = restaurantService
+             .findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.now());
+       } else { 
+         //CHECKSTYLE:OFF
+         getRestaurantsResponse = restaurantService
+             .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());      
+         //CHECKSTYLE:ON
+       
+       }
+      
+             if (getRestaurantsResponse != null && !getRestaurantsResponse.getRestaurants().isEmpty()) {
+              getRestaurantsResponse.getRestaurants().forEach(restaurant -> {
+                restaurant.setName(restaurant.getName().replace("é", "?"));
+               });
+       }
+      
+        
+          return ResponseEntity.ok().body(getRestaurantsResponse);
+        
+        }
 
-    GeoLocation geoloc=new GeoLocation(getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude());
 
-    if(getRestaurantsRequest.getLongitude()==null||getRestaurantsRequest.getLatitude()==null||!geoloc.isValidGeoLocation()){
+    // log.info("getRestaurants called with {}", getRestaurantsRequest);
+    // GetRestaurantsResponse getRestaurantsResponse;
 
-      return ResponseEntity.badRequest().body(null);
+    // GeoLocation geoloc=new GeoLocation(getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude());
 
-    }
+    // if(getRestaurantsRequest.getLongitude()==null||getRestaurantsRequest.getLatitude()==null||!geoloc.isValidGeoLocation()){
+
+    //   return ResponseEntity.badRequest().body(null);
+
+    // }
     
-    //CHECKSTYLE:OFF
-    getRestaurantsResponse = restaurantService
-    .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+    // //CHECKSTYLE:OFF
+    // getRestaurantsResponse = restaurantService
+    // .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
 
-    if(getRestaurantsResponse!=null && !getRestaurantsResponse.getRestaurants().isEmpty()){
-      List<Restaurant> restResponse=getRestaurantsResponse.getRestaurants();
-      for(Restaurant restIter: restResponse){
-        restIter.setName(restIter.getName().replace("é", "/"));
-      }
-      getRestaurantsResponse.setRestaurants(restResponse);
-    }
+    // if(getRestaurantsResponse!=null && !getRestaurantsResponse.getRestaurants().isEmpty()){
+    //   List<Restaurant> restResponse=getRestaurantsResponse.getRestaurants();
+    //   for(Restaurant restIter: restResponse){
+    //     restIter.setName(restIter.getName().replace("é", "/"));
+    //   }
+    //   getRestaurantsResponse.setRestaurants(restResponse);
+    // }
 
-    // log.info("getRestaurants returned {}", getRestaurantsResponse);
-    System.out.println("Restaurants called with:::::::......."+getRestaurantsResponse);
+    // // log.info("getRestaurants returned {}", getRestaurantsResponse);
+    // System.out.println("Restaurants called with:::::::......."+getRestaurantsResponse);
 
 
-    return ResponseEntity.ok().body(getRestaurantsResponse);
+    // return ResponseEntity.ok().body(getRestaurantsResponse);
   }
-
-}
 

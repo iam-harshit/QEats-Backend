@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Log4j2
 public class RestaurantServiceImpl implements RestaurantService {
 
   private final Double peakHoursServingRadiusInKms = 3.0;
@@ -60,7 +61,84 @@ public class RestaurantServiceImpl implements RestaurantService {
 
   }
 
+  private boolean isTimeWithInRange(LocalTime timeNow,
+      LocalTime startTime, LocalTime endTime) {
+    return timeNow.isAfter(startTime) && timeNow.isBefore(endTime);
+  }
+
+  public boolean isPeakHour(LocalTime timeNow) {
+    return isTimeWithInRange(timeNow, LocalTime.of(7, 59, 59), LocalTime.of(10, 00, 01))
+        || isTimeWithInRange(timeNow, LocalTime.of(12, 59, 59), LocalTime.of(14, 00, 01))
+        || isTimeWithInRange(timeNow, LocalTime.of(18, 59, 59), LocalTime.of(21, 00, 01));
+  }
+
+
+  // TODO: CRIO_TASK_MODULE_RESTAURANTSEARCH
+  // Implement findRestaurantsBySearchQuery. The request object has the search string.
+  // We have to combine results from multiple sources:
+  // 1. Restaurants by name (exact and inexact)
+  // 2. Restaurants by cuisines (also called attributes)
+  // 3. Restaurants by food items it serves
+  // 4. Restaurants by food item attributes (spicy, sweet, etc)
+  // Remember, a restaurant must be present only once in the resulting list.
+  // Check RestaurantService.java file for the interface contract.
+  @Override
+  public GetRestaurantsResponse findRestaurantsBySearchQuery(
+      GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+
+      // lattitude: 20.0 , Longitude: 30.0 , SearchFor: Test , currentTime: 22.00.00 (10 PM)
+      List<List<Restaurant>> restaurantAnsList=new ArrayList<>();  
+
+      Double servingRadiusInKms = isPeakHour(currentTime) ? peakHoursServingRadiusInKms : normalHoursServingRadiusInKms;
+      //ServingRadiusInKMs= 3.0 km
+
+      String searchFor = getRestaurantsRequest.getSearchFor();
+
+      Set<String> restaurantSet = new HashSet<>();
+
+      List<Restaurant> restaurantList = new ArrayList<>();
+      
+      if(!searchFor.isEmpty()){
+
+        //By Name
+        restaurantAnsList.add(restaurantRepositoryService.findRestaurantsByName(getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude(), searchFor, currentTime, servingRadiusInKms));
+
+        //By Attributes
+        restaurantAnsList.add(restaurantRepositoryService.findRestaurantsByAttributes(getRestaurantsRequest.getLatitude(),
+              getRestaurantsRequest.getLongitude(), searchFor, currentTime, servingRadiusInKms));
+
+        //By ItemName
+        restaurantAnsList.add(restaurantRepositoryService.findRestaurantsByItemName(getRestaurantsRequest.getLatitude(),
+            getRestaurantsRequest.getLongitude(), searchFor, currentTime, servingRadiusInKms));
+
+        //By ItemAttributes
+        restaurantAnsList.add(restaurantRepositoryService.findRestaurantsByItemAttributes(getRestaurantsRequest.getLatitude(),
+            getRestaurantsRequest.getLongitude(), searchFor, currentTime, servingRadiusInKms));
+    
+
+        // restaurantList = restaurantAnsList.stream().distinct().collect(Collectors.toList());
+          
+
+          for(List<Restaurant> ListRestIter:restaurantAnsList){
+
+              for(Restaurant restListRestIterIter: ListRestIter){
+
+                  if(!restaurantSet.contains(restListRestIterIter.getRestaurantId())){
+                    restaurantSet.add(restListRestIterIter.getName());
+                    restaurantList.add(restListRestIterIter);
+                  }
+              }
+          }
+
+        return new GetRestaurantsResponse(restaurantList);
+
+      }else{
+
+        return new GetRestaurantsResponse(new ArrayList<>());
+      
+      }
 
   }
 
+}
 

@@ -9,22 +9,29 @@ package com.crio.qeats.exchanges;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.RequestParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+// @Data
+@Getter
+@Setter
 @NoArgsConstructor 
 public class GetRestaurantsRequest {
 
     @NotNull
-    @Max(90)
     @Min(-90)
+    @Max(90)
     private Double latitude;
     @NotNull
-    @Max(180)
     @Min(-180)
+    @Max(180)
     private Double longitude;
+
+   private String searchFor = "";
     
 
     public GetRestaurantsRequest(Double latitude, Double longitude){
@@ -32,6 +39,12 @@ public class GetRestaurantsRequest {
         this.longitude = longitude;
     }
 
+    public String getSearchFor() {
+        return searchFor;
+    }
+    public void setSearchFor(String searchFor) {
+        this.searchFor = searchFor;
+    }
     public Double getLatitude() {
         return latitude;
     }

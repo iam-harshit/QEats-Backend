@@ -16,11 +16,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@AllArgsConstructor
-@Data
-@NoArgsConstructor
-@Document
+// @JsonIgnoreProperties(ignoreUnknown = true)
+// @AllArgsConstructor
+// @Data
+// @NoArgsConstructor
+// @Document
+@JsonIgnoreProperties({"id"})
 public class Restaurant {
 
     // @JsonIgnore
@@ -34,6 +35,7 @@ public class Restaurant {
     // private String opensAt;
     // private String closesAt;
     // private List<String> attributes;
+    private String id;
     @NotNull private String restaurantId;
     @NotNull private String name;
     @NotNull private String city;
@@ -42,9 +44,16 @@ public class Restaurant {
     @NotNull private Double longitude;
     @NotNull private String opensAt;
     @NotNull private String closesAt;
-    @NotNull private List<String> attributes = new ArrayList<>();
+    @NotNull private List<String> attributes;
 
 
+    public String getId() {
+        return id;
+      }
+    
+      public void setId(String id) {
+        this.id = id;
+      }
     
 
     public String getRestaurantId() {
