@@ -38,6 +38,11 @@ public interface RestaurantRepositoryService {
   List<Restaurant> findRestaurantsByName(Double latitude, Double longitude,
       String searchString, LocalTime currentTime, Double servingRadiusInKms);
 
+  @Async
+  Future<List<Restaurant>> findRestaurantsByNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms);
+    
+
   /**
    * Get the list of open restaurants within the specified serving radius.
    * @param searchString Query string for item attributes
@@ -46,6 +51,12 @@ public interface RestaurantRepositoryService {
   List<Restaurant> findRestaurantsByAttributes(
       Double latitude, Double longitude, String searchString,
       LocalTime currentTime, Double servingRadiusInKms);
+
+  @Async
+  Future<List<Restaurant>> findRestaurantsByAttributesAsync(
+      Double latitude, Double longitude, String searchString,
+      LocalTime currentTime, Double servingRadiusInKms);
+  
 
   /**
    * Get the list of open restaurants within the specified serving radius which service item
@@ -56,6 +67,11 @@ public interface RestaurantRepositoryService {
   List<Restaurant> findRestaurantsByItemName(Double latitude, Double longitude,
       String searchString, LocalTime currentTime, Double servingRadiusInKms);
 
+  @Async
+  Future<List<Restaurant>> findRestaurantsByItemNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms);
+
+
   /**
    * Get the list of open restaurants within the specified serving radius which have items of
    * specified attributes in search string.
@@ -64,6 +80,11 @@ public interface RestaurantRepositoryService {
    */
   List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude,
       String searchString, LocalTime currentTime, Double servingRadiusInKms);
+
+  @Async
+  Future<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms);
+  
 
 }
 

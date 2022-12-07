@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -140,5 +142,57 @@ public class RestaurantServiceImpl implements RestaurantService {
 
   }
 
-}
+  // TODO: CRIO_TASK_MODULE_MULTITHREADING
+  // Implement multi-threaded version of RestaurantSearch.
+  // Implement variant of findRestaurantsBySearchQuery which is at least 1.5x time faster than
+  // findRestaurantsBySearchQuery.
+  @Override
+  public GetRestaurantsResponse findRestaurantsBySearchQueryMt(
+      GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+
+        Double servingRadiusInKms = isPeakHour(currentTime) ? peakHoursServingRadiusInKms : normalHoursServingRadiusInKms;
+     
+        String searchFor = getRestaurantsRequest.getSearchFor();
+        List<Restaurant> restaurantsByNameHolder=new ArrayList<>();
+        List<Restaurant> restaurantsByAttriHolder=new ArrayList<>(); 
+        List<Restaurant> restaurantList = new ArrayList<>();
+  
+        if(!searchFor.isEmpty()){
+  
+        Future<List<Restaurant>> futureByName= restaurantRepositoryService.findRestaurantsByNameAsync(
+        getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude(),
+        searchFor, currentTime, servingRadiusInKms);
+  
+        Future<List<Restaurant>> futureByAttributeList = restaurantRepositoryService.findRestaurantsByAttributesAsync(getRestaurantsRequest.getLatitude(),
+        getRestaurantsRequest.getLongitude(), searchFor, currentTime, servingRadiusInKms);
+  
+         while(futureByName.isDone() && futureByAttributeList.isDone()){
+  
+          try {
+            
+            restaurantsByNameHolder=futureByName.get();
+            restaurantsByAttriHolder=futureByAttributeList.get();
+  
+          } catch (InterruptedException e) {
+  
+            return new GetRestaurantsResponse(new ArrayList<>());
+  
+          } catch (ExecutionException e) {
+            
+            return new GetRestaurantsResponse(new ArrayList<>());
+  
+          }
+  
+         }
+  
+        restaurantList= Stream.concat(restaurantsByNameHolder.stream(), restaurantsByAttriHolder.stream()).collect(Collectors.toList());
+  
+      }else
+  
+        restaurantList=new ArrayList<>();
+  
+        return new GetRestaurantsResponse(restaurantList);
+     }
+  
+  }
 

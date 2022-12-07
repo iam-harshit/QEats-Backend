@@ -209,9 +209,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   }
 
 
-  // TODO: CRIO_TASK_MODULE_RESTAURANTSEARCH
-  // Objective:
-  // Find restaurants whose attributes (cuisines) intersect with the search query.
   @Override
   public List<Restaurant> findRestaurantsByAttributes(
       Double latitude, Double longitude,
@@ -250,10 +247,6 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
 
 
-  // TODO: CRIO_TASK_MODULE_RESTAURANTSEARCH
-  // Objective:
-  // Find restaurants which serve food items whose names form a complete or partial match
-  // with the search query.
 
   @Override
   public List<Restaurant> findRestaurantsByItemName(
@@ -362,6 +355,43 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
           itemEntityList);
 
 
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    
+    List<Restaurant>restauByName=findRestaurantsByName(latitude, longitude, searchString, currentTime, servingRadiusInKms);
+    
+    return new AsyncResult<List<Restaurant>>(restauByName);
+
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    
+    List<Restaurant> restByAttr= findRestaurantsByAttributes(latitude, longitude, searchString, currentTime, servingRadiusInKms);
+    
+    return new AsyncResult<List<Restaurant>>(restByAttr);
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByItemNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    
+    List<Restaurant> restByItemName= findRestaurantsByItemName(latitude, longitude, searchString, currentTime, servingRadiusInKms);
+
+    return new AsyncResult<List<Restaurant>>(restByItemName);
+  }
+
+  @Override
+  public Future<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    
+    List<Restaurant> restByItemAttr=findRestaurantsByItemAttributes(latitude, longitude, searchString, currentTime, servingRadiusInKms);
+
+    return new AsyncResult<List<Restaurant>>(restByItemAttr);
   }
 
   /**
